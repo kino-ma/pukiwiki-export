@@ -21,7 +21,7 @@ class Page:
         self.id = id
 
         self.createdAt = createdAt
-        self.updateAt = updatedAt
+        self.updatedAt = updatedAt
 
     def json(self):
         data = {
