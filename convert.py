@@ -46,7 +46,7 @@ def parse_args(args):
 
 
 def open_tar(file):
-    tar = tarfile.TarFile(fileobj=file)
+    tar = tarfile.TarFile(fileobj=file, encoding="euc_jp")
     return tar
 
 
