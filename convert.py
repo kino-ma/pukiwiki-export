@@ -27,7 +27,7 @@ def parse_args(args):
         "--output",
         dest="output_file",
         type=argparse.FileType("w"),
-        required=True,
+        default=sys.stdout,
         help="file name to output zipped export data",
     )
 
@@ -89,7 +89,7 @@ def main():
     tar = open_tar(dump_file)
     data = pages_json(tar, prefix)
 
-    print(json.dumps(data))
+    print(json.dumps(data), file=output_file)
 
 
 if __name__ == "__main__":
