@@ -75,8 +75,9 @@ def create_revision(
         raise RuntimeError("attempt to extract non-regular file")
 
     content = f.read()
+    body = content.decode("euc_jp", errors="backslashreplace")
 
-    revision = Revision(page.id, content)
+    revision = Revision(page.id, body)
     page.revisionId = revision.id
 
     return revision
@@ -93,7 +94,7 @@ def get_json(tar_file: tarfile.TarFile, path_prefix: str) -> Tuple[dict, dict]:
             continue
 
         page = create_page(member, path_prefix)
-        revision = create_revision(tar_file, page)
+        revision = create_revision(tar_file, member, page)
 
         p = page.json()
         pages.append(p)
@@ -113,7 +114,7 @@ def main():
     tar = open_tar(dump_file)
     pages, revisions = get_json(tar, prefix)
 
-    print(json.dumps(pages), file=output_file)
+    print(json.dumps(revisions), file=output_file)
 
 
 if __name__ == "__main__":
