@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import sys
 import tarfile
 import urllib.parse
@@ -49,26 +50,28 @@ def open_tar(file):
     return tar
 
 
-def convert_page(tarinfo: tarfile.TarInfo):
+def convert_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     if not tarinfo.isfile():
         raise RuntimeError("Given TarInfo was not a file")
 
     time = tarinfo.mtime
+
     path = tarinfo.path
+    path = os.path.join(path_prefix, path)
 
     page = Page(path, createdAt=time, updatedAt=time)
 
     return page
 
 
-def pages_json(tar_file: tarfile.TarFile):
+def pages_json(tar_file: tarfile.TarFile, path_prefix: str):
     data = []
 
     for member in tar_file:
         if not member.isfile():
             continue
 
-        page = convert_page(member)
+        page = convert_page(member, path_prefix)
 
         d = page.json()
         data.append(d)
@@ -84,7 +87,7 @@ def main():
     prefix = args.prefix
 
     tar = open_tar(dump_file)
-    data = pages_json(tar)
+    data = pages_json(tar, prefix)
 
     print(json.dumps(data))
 
