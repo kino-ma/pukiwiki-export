@@ -44,5 +44,4 @@ class Page:
         data["createdAt"] = self.createdAt
         data["updatedAt"] = self.updatedAt
 
-        j = json.dumps(data)
-        return j
+        return data
