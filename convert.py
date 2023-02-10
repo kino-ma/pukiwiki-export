@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import re
 import sys
 import tarfile
 import urllib.parse
@@ -10,6 +11,11 @@ from typing import Tuple
 
 from lib.page import Page
 from lib.revision import Revision
+
+
+DEFAULT_ENCODING = "euc_jp"
+EUC_JP_SLASH = "2F"
+FILE_SUFFIX = ".txt"
 
 
 def parse_args(args):
@@ -48,8 +54,32 @@ def parse_args(args):
 
 
 def open_tar(file):
-    tar = tarfile.TarFile(fileobj=file, encoding="euc_jp")
+    tar = tarfile.TarFile(fileobj=file, encoding=DEFAULT_ENCODING)
     return tar
+
+
+two_chars = re.compile("..?")
+
+
+def to_url_encode(s: str) -> str:
+    matches = two_chars.findall(s)
+    matches.insert(0, "")
+    encoded = "%".join(matches)
+    return encoded
+
+
+def decode_path(path: str) -> str:
+    url_encoded = to_url_encode(path)
+    decoded = urllib.parse.unquote(url_encoded, encoding=DEFAULT_ENCODING)
+    return decoded
+
+
+def normalize_path(path: str, prefix: str) -> str:
+    path = os.path.basename(path)
+    path, _ = os.path.splitext(path)
+    path = decode_path(path)
+    path = os.path.join(prefix, path)
+    return path
 
 
 def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
@@ -59,7 +89,7 @@ def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     time = tarinfo.mtime
 
     path = tarinfo.path
-    path = os.path.join(path_prefix, path)
+    path = normalize_path(path, path_prefix)
 
     page = Page(path, createdAt=time, updatedAt=time)
 
@@ -75,7 +105,7 @@ def create_revision(
         raise RuntimeError("attempt to extract non-regular file")
 
     content = f.read()
-    body = content.decode("euc_jp", errors="backslashreplace")
+    body = content.decode(DEFAULT_ENCODING, errors="backslashreplace")
 
     revision = Revision(page.id, body)
     page.revisionId = revision.id
@@ -114,7 +144,7 @@ def main():
     tar = open_tar(dump_file)
     pages, revisions = get_json(tar, prefix)
 
-    print(json.dumps(revisions), file=output_file)
+    print(json.dumps(pages), file=output_file)
 
 
 if __name__ == "__main__":
