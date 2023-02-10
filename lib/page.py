@@ -7,7 +7,7 @@ class Page:
     def __init__(
         self,
         path: str,
-        revisionId: Id = Id(),
+        revisionId: Id | None = None,
         id: Id = Id(),
         createdAt: str = datetime.now().isoformat(),
         updatedAt: str = datetime.now().isoformat(),
