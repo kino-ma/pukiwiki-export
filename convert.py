@@ -7,6 +7,7 @@ import re
 import sys
 import tarfile
 import urllib.parse
+from datetime import datetime
 from typing import Tuple
 
 from lib.page import Page
@@ -86,7 +87,8 @@ def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     if not tarinfo.isfile():
         raise RuntimeError("Given TarInfo was not a file")
 
-    time = tarinfo.mtime
+    created = datetime.fromtimestamp(tarinfo.mtime)
+    time = created.isoformat()
 
     path = tarinfo.path
     path = normalize_path(path, path_prefix)
