@@ -6,8 +6,10 @@ import os
 import sys
 import tarfile
 import urllib.parse
+from typing import Tuple
 
 from lib.page import Page
+from lib.revision import Revision
 
 
 def parse_args(args):
@@ -50,7 +52,7 @@ def open_tar(file):
     return tar
 
 
-def convert_page(tarinfo: tarfile.TarInfo, path_prefix: str):
+def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     if not tarinfo.isfile():
         raise RuntimeError("Given TarInfo was not a file")
 
@@ -64,19 +66,41 @@ def convert_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     return page
 
 
-def pages_json(tar_file: tarfile.TarFile, path_prefix: str):
-    data = []
+def create_revision(
+    tar: tarfile.TarFile, member: tarfile.TarInfo, page: Page
+) -> Revision:
+    f = tar.extractfile(member)
+
+    if f is None:
+        raise RuntimeError("attempt to extract non-regular file")
+
+    content = f.read()
+
+    revision = Revision(page.id, content)
+    page.revisionId = revision.id
+
+    return revision
+
+
+def get_json(tar_file: tarfile.TarFile, path_prefix: str) -> Tuple[dict, dict]:
+    """Returns two dictionary, pages.json and revisions.json"""
+
+    pages = []
+    revisions = []
 
     for member in tar_file:
         if not member.isfile():
             continue
 
-        page = convert_page(member, path_prefix)
+        page = create_page(member, path_prefix)
+        revision = create_revision(tar_file, page)
 
-        d = page.json()
-        data.append(d)
+        p = page.json()
+        pages.append(p)
+        r = revision.json()
+        revisions.append(r)
 
-    return data
+    return (pages, revisions)
 
 
 def main():
@@ -87,9 +111,9 @@ def main():
     prefix = args.prefix
 
     tar = open_tar(dump_file)
-    data = pages_json(tar, prefix)
+    pages, revisions = get_json(tar, prefix)
 
-    print(json.dumps(data), file=output_file)
+    print(json.dumps(pages), file=output_file)
 
 
 if __name__ == "__main__":
