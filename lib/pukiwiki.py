@@ -64,7 +64,8 @@ def convert_lsx(src):
 
 
 def convert_headings(src):
-    "Because other notations also use `#`, this conversion must be run at the last"
+    """Because other notations also use `#`, this conversion must be run at the
+    last"""
     s1 = _sub(r"^\*\*\*", "###", src)
     s2 = _sub(r"^\*\*", "##", s1)
     s3 = _sub(r"^\*", "#", s2)
