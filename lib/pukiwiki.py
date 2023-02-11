@@ -61,7 +61,7 @@ def convert_headings(src):
     s1 = _sub(r"^\*\*\*", "###", src)
     s2 = _sub(r"^\*\*", "##", s1)
     s3 = _sub(r"^\*", "#", s2)
-    s4 = _sub(r"^(#+)([^ ])", r"\1 \2", s3)
+    s4 = _sub(r"^(#+)([^ #])", r"\1 \2", s3)
 
     return s4
 
