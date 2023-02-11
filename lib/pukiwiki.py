@@ -84,26 +84,52 @@ def convert(src):
 
 def _run_test():
     text = r"""hoge [#fuga]
-    *** hoge
-    ** fuga
-    * piyo
-    -hoge
-    --fuga
-    ---piyo
-    &br
-    #pre{
-        hoge
-    }
-    #pre{{
-    fuga
-    hogefuga
-    }}
-    %%hegu%%
-    #lsx
-    """
+***hoge
+**fuga
+*piyo
+-hoge
+--fuga
+---piyo
+&br
+#pre{
+    hoge
+}
+#pre{{
+fuga
+hogefuga
+}}
+%%hegu%%
+#lsx
+"""
 
-    out = convert(text)
-    print(out)
+    want = r"""hoge
+### hoge
+## fuga
+# piyo
+- hoge
+    -fuga
+        -piyo
+<br>
+```
+    hoge
+```
+```
+fuga
+hogefuga
+```
+~~hegu~~
+$lsx()
+"""
+
+    got = convert(text)
+    if want == got:
+        print("ok")
+    else:
+        print("failed")
+        print("=== want ===")
+        print(want)
+        print("=== got ===")
+        print(got)
 
 
 if __name__ == "__main__":
