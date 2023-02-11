@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from .date import epoch_iso
 from .id import Id
 
 
@@ -18,7 +17,7 @@ class Revision:
         self.format = format
 
         if createdAt is None:
-            createdAt = datetime.now().isoformat()
+            createdAt = epoch_iso()
         self.createdAt = createdAt
 
     def json(self):

@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from .date import epoch_iso
 from .id import Id
 
 
@@ -9,8 +8,8 @@ class Page:
         path: str,
         revisionId: Id | None = None,
         id: Id = Id(),
-        createdAt: str = datetime.now().isoformat(),
-        updatedAt: str = datetime.now().isoformat(),
+        createdAt: str = epoch_iso(),
+        updatedAt: str = epoch_iso(),
     ):
         if not path.startswith("/"):
             path = f"/{path}"
