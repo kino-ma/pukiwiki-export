@@ -111,7 +111,6 @@ def create_revision(
 
     date = pukiwiki.get_date(original)
     date = date or page.createdAt
-    print(f"{date=}")
 
     revision = Revision(page.id, body, createdAt=date)
 
