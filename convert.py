@@ -108,12 +108,16 @@ def create_revision(
         raise RuntimeError("attempt to extract non-regular file")
 
     content = f.read()
-    body = content.decode(DEFAULT_ENCODING, errors="backslashreplace")
-    body = pukiwiki.convert(body)
-    print(body)
+    original = content.decode(DEFAULT_ENCODING, errors="backslashreplace")
+    body = pukiwiki.convert(original)
 
-    revision = Revision(page.id, body)
+    date = pukiwiki.get_date(body)
+
+    revision = Revision(page.id, body, createdAt=date)
+
     page.revisionId = revision.id
+    if date is not None:
+        page.createdAt = page.updatedAt = date
 
     return revision
 
