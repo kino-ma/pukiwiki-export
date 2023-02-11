@@ -24,14 +24,6 @@ def delete_hash(src):
     return s
 
 
-def convert_headings(src):
-    s1 = _sub(r"^\*\*\*", "###", src)
-    s2 = _sub(r"^\*\*", "##", s1)
-    s3 = _sub(r"^\*", "#", s2)
-
-    return s3
-
-
 def convert_bullets(src):
     s1 = _sub(r"^---", "        -", src)
     s2 = _sub(r"^--", "    -", s1)
@@ -64,15 +56,25 @@ def convert_lsx(src):
     return s
 
 
+def convert_headings(src):
+    "Because other notations also use `#`, this conversion must be run at the last"
+    s1 = _sub(r"^\*\*\*", "###", src)
+    s2 = _sub(r"^\*\*", "##", s1)
+    s3 = _sub(r"^\*", "#", s2)
+    s4 = _sub(r"^(#+)([^ ])", r"\1 \2", s3)
+
+    return s4
+
+
 def convert(src):
     funcs = [
         delete_hash,
-        convert_headings,
         convert_bullets,
         convert_br,
         convert_pre,
         convert_strike,
         convert_lsx,
+        convert_headings,
     ]
 
     s = src
@@ -107,8 +109,8 @@ hogefuga
 ## fuga
 # piyo
 - hoge
-    -fuga
-        -piyo
+    - fuga
+        - piyo
 <br>
 ```
     hoge
