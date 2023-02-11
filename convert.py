@@ -10,6 +10,7 @@ import urllib.parse
 from datetime import datetime
 from typing import Tuple
 
+from lib import pukiwiki
 from lib.page import Page
 from lib.revision import Revision
 
@@ -108,6 +109,8 @@ def create_revision(
 
     content = f.read()
     body = content.decode(DEFAULT_ENCODING, errors="backslashreplace")
+    body = pukiwiki.convert(body)
+    print(body)
 
     revision = Revision(page.id, body)
     page.revisionId = revision.id
@@ -146,7 +149,7 @@ def main():
     tar = open_tar(dump_file)
     pages, revisions = get_json(tar, prefix)
 
-    print(json.dumps(pages), file=output_file)
+    print(json.dumps(revisions), file=output_file)
 
 
 if __name__ == "__main__":
