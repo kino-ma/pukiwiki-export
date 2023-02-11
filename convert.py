@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import io
 import json
 import os
 import re
@@ -41,7 +42,7 @@ def parse_args(args):
         "-o",
         "--output",
         dest="output_file",
-        type=argparse.FileType("w"),
+        type=argparse.FileType("wb"),
         default=sys.stdout,
         help="file name to output zipped export data",
     )
@@ -148,7 +149,7 @@ def get_json(tar_file: tarfile.TarFile, path_prefix: str) -> Tuple[dict, dict]:
 
 
 def write_zip(
-    filename: str,
+    file: io.BufferedWriter,
     pages: dict,
     revisions: dict,
     meta: dict = None,
@@ -156,7 +157,7 @@ def write_zip(
     revisions_filename: str = REVISIONS_JSON,
     meta_filename: str = META_JSON,
 ):
-    with zipfile.ZipFile(filename, "x") as file:
+    with zipfile.ZipFile(file, "x") as file:
         p = json.dumps(pages)
         file.writestr(pages_filename, p)
 
@@ -177,7 +178,7 @@ def main():
     tar = open_tar(dump_file)
     pages, revisions = get_json(tar, prefix)
 
-    print(json.dumps(revisions), file=output_file)
+    write_zip(output_file, pages, revisions)
 
 
 if __name__ == "__main__":
