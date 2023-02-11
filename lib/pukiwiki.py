@@ -1,17 +1,17 @@
 import re
 
-# s/ \[#[0-9a-z]\+\]$//g
-# s/^\*\*\*/###/g
-# s/^\*\*/##/g
-# s/^\*/#/g
-# s/^---/        -/g
-# s/^--/    -/g
-# s/^\(\s*\)-\([^ ]\)/\1- \2/g
-# s/&br/<br>/g
-# s/^#pre{*/```/g
-# s/^}}*/```/g
-# s/%%/~~/g'
-# "s/^\#lsx/`echo -ne '\u0024'`lsx()"
+
+def get_date(src) -> str | None:
+    m = re.match(r'^#author\("(.*)",".*",".*"\)', src)
+
+    if m is None:
+        return None
+
+    date = m.group(1)
+    if date == "":
+        return None
+
+    return date
 
 
 def _sub(pattern, repl, string, count=0, flags=0):
@@ -84,7 +84,7 @@ def convert(src):
     return s
 
 
-def _run_test():
+def _run_convert_test():
     text = r"""hoge [#fuga]
 ***hoge
 **fuga
@@ -132,7 +132,53 @@ $lsx()
         print(want)
         print("=== got ===")
         print(got)
+        print("=== end ===")
+
+
+def _run_date_test():
+    text1 = """#author("2018-11-08T16:04:27+09:00","","")"""
+    want1 = "2018-11-08T16:04:27+09:00"
+
+    got1 = get_date(text1)
+    if want1 == got1:
+        print("ok")
+    else:
+        print("failed")
+        print("=== want ===")
+        print(want1)
+        print("=== got ===")
+        print(got1)
+        print("=== end ===")
+
+    text2 = """#author("2022-06-28T08:46:56+00:00","default:ht","ht")"""
+    want2 = "2022-06-28T08:46:56+00:00"
+
+    got2 = get_date(text2)
+    if want2 == got2:
+        print("ok")
+    else:
+        print("failed")
+        print("=== want ===")
+        print(want2)
+        print("=== got ===")
+        print(got2)
+        print("=== end ===")
+
+    text3 = """#author("","default:ht","ht")"""
+    want3 = None
+
+    got3 = get_date(text3)
+    if want3 == got3:
+        print("ok")
+    else:
+        print("failed")
+        print("=== want ===")
+        print(want3)
+        print("=== got ===")
+        print(got3)
+        print("=== end ===")
 
 
 if __name__ == "__main__":
-    _run_test()
+    _run_convert_test()
+    _run_date_test()
