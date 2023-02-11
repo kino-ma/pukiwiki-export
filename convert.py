@@ -21,7 +21,8 @@ FILE_SUFFIX = ".txt"
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
-        description="Convert Pukiwiki formatted text data into Growi importable zipped file."
+        description="Convert Pukiwiki formatted text data into Growi"
+        "importable zipped file."
     )
 
     parser.add_argument(
@@ -47,7 +48,8 @@ def parse_args(args):
         type=str,
         required=False,
         default="pukiwiki",
-        help="path prefix to be inserted to output pages. default to 'pukiwiki'.",
+        help="path prefix to be inserted to output pages. default to 'pukiwiki"
+        "'.",
     )
 
     parsed_args = parser.parse_args(args)
