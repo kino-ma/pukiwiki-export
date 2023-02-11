@@ -10,12 +10,15 @@ class Revision:
         body: str,
         id: Id = Id(),
         format: str = "markdown",
-        createdAt: str = datetime.now().isoformat(),
+        createdAt: str | None = None,
     ):
         self.id = id
         self.pageId = pageId
         self.body = body
         self.format = format
+
+        if createdAt is None:
+            createdAt = datetime.now().isoformat()
         self.createdAt = createdAt
 
     def json(self):
