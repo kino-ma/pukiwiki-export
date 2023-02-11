@@ -7,6 +7,7 @@ import re
 import sys
 import tarfile
 import urllib.parse
+import zipfile
 from typing import Tuple
 
 from lib import pukiwiki
@@ -17,6 +18,10 @@ from lib.revision import Revision
 DEFAULT_ENCODING = "euc_jp"
 EUC_JP_SLASH = "2F"
 FILE_SUFFIX = ".txt"
+
+META_JSON = "meta.json"
+PAGES_JSON = "pages.json"
+REVISIONS_JSON = "revisions.json"
 
 
 def parse_args(args):
@@ -140,6 +145,26 @@ def get_json(tar_file: tarfile.TarFile, path_prefix: str) -> Tuple[dict, dict]:
         revisions.append(r)
 
     return (pages, revisions)
+
+
+def write_zip(
+    filename: str,
+    pages: dict,
+    revisions: dict,
+    meta: dict = None,
+    pages_filename: str = PAGES_JSON,
+    revisions_filename: str = REVISIONS_JSON,
+    meta_filename: str = META_JSON,
+):
+    with zipfile.ZipFile(filename, "x") as file:
+        p = json.dumps(pages)
+        file.writestr(pages_filename, p)
+
+        r = json.dumps(revisions)
+        file.writestr(revisions_filename, r)
+
+        m = json.dumps(meta)
+        file.writestr(meta_filename, m)
 
 
 def main():
