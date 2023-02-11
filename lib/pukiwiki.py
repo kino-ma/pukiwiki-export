@@ -1,8 +1,10 @@
 import re
 
+_pat_author = re.compile(r'^#author\("(.*)","(.*)","(.*)"\)\n?')
+
 
 def get_date(src) -> str | None:
-    m = re.match(r'^#author\("(.*)",".*",".*"\)', src)
+    m = re.match(_pat_author, src)
 
     if m is None:
         return None
@@ -16,6 +18,11 @@ def get_date(src) -> str | None:
 
 def _sub(pattern, repl, string, count=0, flags=0):
     s = re.sub(pattern, repl, string, count=count, flags=re.MULTILINE | flags)
+    return s
+
+
+def delete_author(src):
+    s = re.sub(_pat_author, "", src)
     return s
 
 
@@ -68,6 +75,7 @@ def convert_headings(src):
 
 def convert(src):
     funcs = [
+        delete_author,
         delete_hash,
         convert_bullets,
         convert_br,
@@ -85,7 +93,8 @@ def convert(src):
 
 
 def _run_convert_test():
-    text = r"""hoge [#fuga]
+    text = r"""#author("2018-11-08T16:04:27+09:00","","")
+hoge [#fuga]
 ***hoge
 **fuga
 *piyo
