@@ -7,7 +7,6 @@ import re
 import sys
 import tarfile
 import urllib.parse
-from datetime import datetime
 from typing import Tuple
 
 from lib import pukiwiki
@@ -88,13 +87,10 @@ def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     if not tarinfo.isfile():
         raise RuntimeError("Given TarInfo was not a file")
 
-    created = datetime.fromtimestamp(tarinfo.mtime)
-    time = created.isoformat()
-
     path = tarinfo.path
     path = normalize_path(path, path_prefix)
 
-    page = Page(path, createdAt=time, updatedAt=time)
+    page = Page(path)
 
     return page
 
@@ -111,7 +107,9 @@ def create_revision(
     original = content.decode(DEFAULT_ENCODING, errors="backslashreplace")
     body = pukiwiki.convert(original)
 
-    date = pukiwiki.get_date(body)
+    date = pukiwiki.get_date(original)
+    date = date or page.createdAt
+    print(f"{date=}")
 
     revision = Revision(page.id, body, createdAt=date)
 
