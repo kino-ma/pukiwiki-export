@@ -41,7 +41,7 @@ class User:
             "lastLoginAt": epoch_iso(),
         }
 
-        d["_id"] = self.id
+        d["_id"] = str(self.id)
         d["admin"] = self.isAdmin
         d["rceatedAt"] = self.createdAt
         d["name"] = self.name
