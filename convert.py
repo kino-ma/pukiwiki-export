@@ -203,6 +203,7 @@ def get_data_json(
 
         page = create_page(member, path_prefix)
         revision = create_revision(tar_file, member, page, user)
+        page.revisionId = revision.id
 
         p = page.json()
         pages.append(p)
