@@ -1,2 +1,8 @@
 __pycache__/
 *.py[cod]
+out/
+*.zip
+pages*.json
+revisions*.json
+users*.json
+meta*.json
