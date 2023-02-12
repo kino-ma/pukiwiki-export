@@ -8,11 +8,11 @@ class Revision:
         pageId: Id,
         body: str,
         authorId: Id,
-        id: Id = Id(),
+        id: Id | None = None,
         format: str = "markdown",
         createdAt: str | None = None,
     ):
-        self.id = id
+        self.id = id or Id()
         self.pageId = pageId
         self.body = body
         self.authorId = authorId

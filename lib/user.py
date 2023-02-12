@@ -12,7 +12,7 @@ class User:
         username: str | None = None,
         email: str | None = None,
         isAdmin: bool = False,
-        id: Id = Id(),
+        id: Id | None = None,
         createdAt: str = now_iso(),
     ):
         self.name = name
@@ -26,7 +26,7 @@ class User:
         self.email = email
 
         self.isAdmin = isAdmin
-        self.id = id
+        self.id = id or Id()
         self.createdAt = createdAt
 
     def json(self):

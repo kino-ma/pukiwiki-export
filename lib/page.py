@@ -7,7 +7,7 @@ class Page:
         self,
         path: str,
         revisionId: Id | None = None,
-        id: Id = Id(),
+        id: Id | None = None,
         createdAt: str = epoch_iso(),
         updatedAt: str = epoch_iso(),
     ):
@@ -16,7 +16,7 @@ class Page:
         self.path = path
 
         self.revisionId = revisionId
-        self.id = id
+        self.id = id or Id()
 
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -37,7 +37,7 @@ class Page:
         }
 
         data["_id"] = str(self.id)
-        data["revisionId"] = str(self.revisionId)
+        data["revision"] = str(self.revisionId)
         data["path"] = self.path
         data["createdAt"] = self.createdAt
         data["updatedAt"] = self.updatedAt
