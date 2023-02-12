@@ -4,7 +4,7 @@ from .password import random_password, hash_password
 
 
 class User:
-    def __init(
+    def __init__(
         self,
         name: str,
         password_seed: str,
