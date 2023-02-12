@@ -120,7 +120,10 @@ def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
 
 
 def create_revision(
-    tar: tarfile.TarFile, member: tarfile.TarInfo, page: Page
+    tar: tarfile.TarFile,
+    member: tarfile.TarInfo,
+    page: Page,
+    author: User,
 ) -> Revision:
     f = tar.extractfile(member)
 
@@ -134,13 +137,34 @@ def create_revision(
     date = pukiwiki.get_date(original)
     date = date or page.createdAt
 
-    revision = Revision(page.id, body, createdAt=date)
+    revision = Revision(
+        page.id,
+        body,
+        author.id,
+        createdAt=date,
+    )
 
     page.revisionId = revision.id
     if date is not None:
         page.createdAt = page.updatedAt = date
 
     return revision
+
+
+def create_user(password_seed: str, name: str = "pukiwiki") -> User:
+    user = User(name, password_seed)
+    return user
+
+
+def get_users_json_from_user(user: User) -> dict:
+    d = [user.json()]
+    return d
+
+
+def get_users_json(password_seed: str, name: str = "pukiwiki"):
+    user = create_user(password_seed, name)
+    d = get_users_json_from_user(user)
+    return d
 
 
 def get_meta_json(
@@ -154,14 +178,8 @@ def get_meta_json(
     return d
 
 
-def get_users_json(password_seed: str, name: str = "pukiwiki"):
-    user = User(name, password_seed)
-    d = [user.json()]
-    return d
-
-
 def get_data_json(
-    tar_file: tarfile.TarFile, path_prefix: str
+    tar_file: tarfile.TarFile, path_prefix: str, user: User
 ) -> Tuple[dict, dict, dict]:
     """Returns three dictionary, pages.json, revisions.json, and meta.json"""
 
@@ -173,7 +191,7 @@ def get_data_json(
             continue
 
         page = create_page(member, path_prefix)
-        revision = create_revision(tar_file, member, page)
+        revision = create_revision(tar_file, member, page, user)
 
         p = page.json()
         pages.append(p)
@@ -218,10 +236,11 @@ def main():
 
     password_seed = random_seed()
     meta = get_meta_json(password_seed, growi_version)
-    users = get_users_json(password_seed)
+    user = create_user(password_seed)
+    users = get_users_json_from_user(user)
 
     tar = open_tar(dump_file)
-    pages, revisions = get_data_json(tar, prefix, growi_version)
+    pages, revisions = get_data_json(tar, prefix, user)
 
     write_zip(output_file, pages, revisions, users, meta)
 
