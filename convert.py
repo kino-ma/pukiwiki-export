@@ -49,7 +49,7 @@ def parse_args(args):
         "--output",
         dest="output_file",
         type=argparse.FileType("wb"),
-        default=sys.stdout,
+        default="export.growi.zip",
         help="file name to output zipped export data",
     )
 
