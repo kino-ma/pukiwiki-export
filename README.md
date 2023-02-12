@@ -39,8 +39,9 @@ Pukiwiki の Wiki データをダンプして Growi にインポートできる�
 
 動作環境
 
-- Python 3.9.12
-- または Docker
+- Python 3.10
+- または Nix Flakes
+    - 開発用シェル (`$ nix develop`) 内でご使用ください
 
 ## 使い方
 
