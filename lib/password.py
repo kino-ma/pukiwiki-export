@@ -8,6 +8,9 @@ def random_password(length: int = 64):
     return p
 
 
+random_seed = random_password
+
+
 def sha256(text: str) -> str:
     m = hashlib.sha256()
     bytes = text.encode()
