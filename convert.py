@@ -65,6 +65,16 @@ def parse_args(args):
     )
 
     parser.add_argument(
+        "-u",
+        "--user-name",
+        dest="name",
+        type=str,
+        required=False,
+        default="pukiwiki",
+        help="An user's name to be set as a author of exported pages.",
+    )
+
+    parser.add_argument(
         "-g",
         "--growi-version",
         dest="growi_version",
@@ -232,11 +242,12 @@ def main():
     dump_file = args.pukiwiki_dump
     output_file = args.output_file
     prefix = args.prefix
+    user_name = args.name
     growi_version = args.growi_version
 
     password_seed = random_seed()
     meta = get_meta_json(password_seed, growi_version)
-    user = create_user(password_seed)
+    user = create_user(password_seed, user_name)
     users = get_users_json_from_user(user)
 
     tar = open_tar(dump_file)
