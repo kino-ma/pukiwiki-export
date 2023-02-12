@@ -7,6 +7,7 @@ class Revision:
         self,
         pageId: Id,
         body: str,
+        authorId: Id,
         id: Id = Id(),
         format: str = "markdown",
         createdAt: str | None = None,
@@ -14,6 +15,7 @@ class Revision:
         self.id = id
         self.pageId = pageId
         self.body = body
+        self.authorId = authorId
         self.format = format
 
         if createdAt is None:
@@ -29,6 +31,7 @@ class Revision:
         data["format"] = str(self.format)
         data["createdAt"] = self.createdAt
         data["pageId"] = str(self.pageId)
+        data["author"] = str(self.authorId)
         data["body"] = self.body
 
         return data
