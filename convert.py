@@ -50,7 +50,8 @@ def parse_args(args):
         dest="output_file",
         type=argparse.FileType("wb"),
         default="export.growi.zip",
-        help="file name to output zipped export data",
+        help="file name to output zipped export data. Default to"
+        "'export.growi.zip`",
     )
 
     parser.add_argument(
@@ -60,7 +61,7 @@ def parse_args(args):
         type=str,
         required=False,
         default="pukiwiki",
-        help="path prefix to be inserted to output pages. default to 'pukiwiki"
+        help="path prefix to be inserted to output pages. Default to 'pukiwiki"
         "'.",
     )
 
@@ -71,7 +72,7 @@ def parse_args(args):
         type=str,
         required=False,
         default="pukiwiki",
-        help="An user's name to be set as a author of exported pages.",
+        help="an user's name to be set as a author of exported pages.",
     )
 
     parser.add_argument(
@@ -81,7 +82,7 @@ def parse_args(args):
         type=str,
         required=False,
         default="5.0.2",
-        help="Version of the destination Growi server. Default to 5.0.2",
+        help="version of the destination Growi server. Default to 5.0.2",
     )
 
     parsed_args = parser.parse_args(args)
