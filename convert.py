@@ -12,8 +12,11 @@ import zipfile
 from typing import Tuple
 
 from lib import pukiwiki
+from lib.date import now_iso
 from lib.page import Page
+from lib.password import random_seed
 from lib.revision import Revision
+from lib.user import User
 
 
 DEFAULT_ENCODING = "euc_jp"
@@ -23,6 +26,9 @@ FILE_SUFFIX = ".txt"
 META_JSON = "meta.json"
 PAGES_JSON = "pages.json"
 REVISIONS_JSON = "revisions.json"
+USERS_JSON = "users.json"
+
+DEFAULT_RGOWI_VERSION = "5.0.2"
 
 
 def parse_args(args):
@@ -56,6 +62,16 @@ def parse_args(args):
         default="pukiwiki",
         help="path prefix to be inserted to output pages. default to 'pukiwiki"
         "'.",
+    )
+
+    parser.add_argument(
+        "-g",
+        "--growi-version",
+        dest="growi_version",
+        type=str,
+        required=False,
+        default="5.0.2",
+        help="Version of the destination Growi server. Default to 5.0.2",
     )
 
     parsed_args = parser.parse_args(args)
@@ -127,8 +143,27 @@ def create_revision(
     return revision
 
 
-def get_json(tar_file: tarfile.TarFile, path_prefix: str) -> Tuple[dict, dict]:
-    """Returns two dictionary, pages.json and revisions.json"""
+def get_meta_json(
+    password_seed: str, version=DEFAULT_RGOWI_VERSION, exported_at=now_iso()
+):
+    d = {
+        "version": version,
+        "passwordSeed": password_seed,
+        "exportedAt": exported_at,
+    }
+    return d
+
+
+def get_users_json(password_seed: str, name: str = "pukiwiki"):
+    user = User(name, password_seed)
+    d = [user.json()]
+    return d
+
+
+def get_data_json(
+    tar_file: tarfile.TarFile, path_prefix: str
+) -> Tuple[dict, dict, dict]:
+    """Returns three dictionary, pages.json, revisions.json, and meta.json"""
 
     pages = []
     revisions = []
@@ -145,16 +180,18 @@ def get_json(tar_file: tarfile.TarFile, path_prefix: str) -> Tuple[dict, dict]:
         r = revision.json()
         revisions.append(r)
 
-    return (pages, revisions)
+    return pages, revisions
 
 
 def write_zip(
     file: io.BufferedWriter,
     pages: dict,
     revisions: dict,
-    meta: dict = None,
+    users: dict,
+    meta: dict,
     pages_filename: str = PAGES_JSON,
     revisions_filename: str = REVISIONS_JSON,
+    users_filename: str = USERS_JSON,
     meta_filename: str = META_JSON,
 ):
     with zipfile.ZipFile(file, "x") as file:
@@ -163,6 +200,9 @@ def write_zip(
 
         r = json.dumps(revisions)
         file.writestr(revisions_filename, r)
+
+        u = json.dumps(users)
+        file.writestr(users_filename, u)
 
         m = json.dumps(meta)
         file.writestr(meta_filename, m)
@@ -174,11 +214,16 @@ def main():
     dump_file = args.pukiwiki_dump
     output_file = args.output_file
     prefix = args.prefix
+    growi_version = args.growi_version
+
+    password_seed = random_seed()
+    meta = get_meta_json(password_seed, growi_version)
+    users = get_users_json(password_seed)
 
     tar = open_tar(dump_file)
-    pages, revisions = get_json(tar, prefix)
+    pages, revisions = get_data_json(tar, prefix, growi_version)
 
-    write_zip(output_file, pages, revisions)
+    write_zip(output_file, pages, revisions, users, meta)
 
 
 if __name__ == "__main__":
