@@ -43,7 +43,7 @@ class User:
 
         d["_id"] = str(self.id)
         d["admin"] = self.isAdmin
-        d["rceatedAt"] = self.createdAt
+        d["createdAt"] = self.createdAt
         d["name"] = self.name
         d["username"] = self.username
         d["email"] = self.email
