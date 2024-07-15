@@ -118,6 +118,10 @@ def normalize_path(path: str, prefix: str) -> str:
     return path
 
 
+def is_wiki_page(member: tarfile.TarInfo) -> bool:
+    return member.path.startswith("wiki/") or member.path.startswith("/wiki/")
+
+
 def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     if not tarinfo.isfile():
         raise RuntimeError("Given TarInfo was not a file")
@@ -199,6 +203,10 @@ def get_data_json(
 
     for member in tar_file:
         if not member.isfile():
+            continue
+
+        if not is_wiki_page(member):
+            print("skipping", member.path)
             continue
 
         page = create_page(member, path_prefix)
