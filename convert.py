@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-import io
 import json
 import os
 import re
 import sys
 import tarfile
+import typing
 import urllib.parse
 import zipfile
 from typing import Tuple
@@ -118,8 +118,10 @@ def normalize_path(path: str, prefix: str) -> str:
     return path
 
 
-def is_wiki_page(member: tarfile.TarInfo) -> bool:
-    return member.path.startswith("wiki/") or member.path.startswith("/wiki/")
+def is_wiki_page(tarinfo: tarfile.TarInfo) -> bool:
+    return tarinfo.path.startswith("wiki/") or tarinfo.path.startswith(
+        "/wiki/"
+    )
 
 
 def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
@@ -171,12 +173,12 @@ def create_user(password_seed: str, name: str = "pukiwiki") -> User:
     return user
 
 
-def get_users_json_from_user(user: User) -> dict:
+def get_users_json_from_user(user: User) -> list[dict]:
     d = [user.json()]
     return d
 
 
-def get_users_json(password_seed: str, name: str = "pukiwiki"):
+def get_users_json(password_seed: str, name: str = "pukiwiki") -> list[dict]:
     user = create_user(password_seed, name)
     d = get_users_json_from_user(user)
     return d
@@ -195,8 +197,8 @@ def get_meta_json(
 
 def get_data_json(
     tar_file: tarfile.TarFile, path_prefix: str, user: User
-) -> Tuple[dict, dict, dict]:
-    """Returns three dictionary, pages.json, revisions.json, and meta.json"""
+) -> Tuple[list[dict], list[dict]]:
+    """Returns three dictionary, pages.json, revisions.json"""
 
     pages = []
     revisions = []
@@ -222,28 +224,28 @@ def get_data_json(
 
 
 def write_zip(
-    file: io.BufferedWriter,
+    file: typing.IO[bytes],
     pages: dict,
     revisions: dict,
-    users: dict,
+    users: list[dict],
     meta: dict,
     pages_filename: str = PAGES_JSON,
     revisions_filename: str = REVISIONS_JSON,
     users_filename: str = USERS_JSON,
     meta_filename: str = META_JSON,
 ):
-    with zipfile.ZipFile(file, "x") as file:
+    with zipfile.ZipFile(file, "x") as f:
         p = json.dumps(pages)
-        file.writestr(pages_filename, p)
+        f.writestr(pages_filename, p)
 
         r = json.dumps(revisions)
-        file.writestr(revisions_filename, r)
+        f.writestr(revisions_filename, r)
 
         u = json.dumps(users)
-        file.writestr(users_filename, u)
+        f.writestr(users_filename, u)
 
         m = json.dumps(meta)
-        file.writestr(meta_filename, m)
+        f.writestr(meta_filename, m)
 
 
 def main():
