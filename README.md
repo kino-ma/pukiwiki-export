@@ -1,12 +1,12 @@
-# pukiwiki-to-growi
+# pukiwiki-export
 
-Converter utility to import pukiwiki data to growi.
+Utility to export pukiwiki data to growi or as HTML.
 
-Because both software are mainly use in Japan, this README document is written in English.
+Because the software is mainly use in Japan, this README document is written in Japanese.
 
 ## 本ツールについて
 
-Pukiwiki の Wiki データをダンプして Growi にインポートできるようにするツールです。  
+Pukiwiki の Wiki データをダンプして HTML に出力、または Growi にインポートできるようにするツールです。  
 インポートの際、 Pukiwiki 記法から Markdown 記法への変換を行います。
 
 ただし、一部非公式な手法を用いているため、一切の動作保証をしません。ご利用は自己責任でお願いいたします。
@@ -26,9 +26,11 @@ Pukiwiki の Wiki データをダンプして Growi にインポートできる�
     - Wiki 内リンク、テーブルなど、非対応の記法があります
     - 変換方法等、詳しくは [`lib/pukiwiki.py`](lib/pukiwiki.py) をご覧ください
     - (参考: https://qiita.com/yuki-takei/items/152e20f4421333ae8fd9)
-- アーカイブデータには `pukiwiki` (または任意のユーザ名) ユーザが含まれ、インポートされたページはこのユーザによって作成されたことになります
-- インポートされるページには、任意のプレフィックスを付与することができます
-    - デフォルトでは `pukiwiki` となります
+- Markdown を経由して、 Growi のインポート形式または HTML に出力することができます
+- Growi にインポートする場合
+    - アーカイブデータには `pukiwiki` (または任意のユーザ名) ユーザが含まれ、インポートされたページはこのユーザによって作成されたことになります
+    - インポートされるページには、任意のプレフィックスを付与することができます
+        - デフォルトでは `pukiwiki` となります
 
 ## 環境
 
@@ -43,7 +45,7 @@ Pukiwiki の Wiki データをダンプして Growi にインポートできる�
 - または Nix Flakes
     - 開発用シェル (`$ nix develop`) 内でご使用ください
 
-## 使い方
+## 使い方 (Growi にインポートする場合)
 
 エクスポート元の Pukiwiki を pukiwiki.example.com、 インポート先の Growi を growi.example.com とします。
 
@@ -61,7 +63,7 @@ Growi は、あるインスタンスから別のインスタンスへ移行を�
 
 1. 本リポジトリをクローンします。
 2. Step 1. でエクスポートしたデータのパスと、任意の出力先ファイル名を指定し、 `convert.py` を実行します。
-    - `python3 convert.py dump.tar.gz`
+    - `python3 main.py dump.tar.gz`
     - その他のオプションについては `-h` オプションで参照してください
 3. `export.growi.zip` または任意のファイル名の Zip ファイルが生成されていることを確認します
 
