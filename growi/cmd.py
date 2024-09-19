@@ -2,11 +2,8 @@ import argparse
 from argparse import ArgumentParser, Namespace as ArgNamespace
 
 import json
-import os
-import re
 import tarfile
 import typing
-import urllib.parse
 import zipfile
 from typing import Tuple
 
@@ -18,7 +15,6 @@ from growi.user import User
 from growi.password import random_seed
 
 
-DEFAULT_ENCODING = "euc_jp"
 EUC_JP_SLASH = "2F"
 FILE_SUFFIX = ".txt"
 
@@ -75,35 +71,6 @@ def set_args(parser: ArgumentParser):
     parser.set_defaults
 
 
-def open_tar(file):
-    tar = tarfile.TarFile(fileobj=file, encoding=DEFAULT_ENCODING)
-    return tar
-
-
-two_chars = re.compile("..?")
-
-
-def to_url_encode(s: str) -> str:
-    matches = two_chars.findall(s)
-    matches.insert(0, "")
-    encoded = "%".join(matches)
-    return encoded
-
-
-def decode_path(path: str) -> str:
-    url_encoded = to_url_encode(path)
-    decoded = urllib.parse.unquote(url_encoded, encoding=DEFAULT_ENCODING)
-    return decoded
-
-
-def normalize_path(path: str, prefix: str) -> str:
-    path = os.path.basename(path)
-    path, _ = os.path.splitext(path)
-    path = decode_path(path)
-    path = os.path.join(prefix, path)
-    return path
-
-
 def is_wiki_page(tarinfo: tarfile.TarInfo) -> bool:
     return tarinfo.path.startswith("wiki/") or tarinfo.path.startswith(
         "/wiki/"
@@ -115,7 +82,7 @@ def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
         raise RuntimeError("Given TarInfo was not a file")
 
     path = tarinfo.path
-    path = normalize_path(path, path_prefix)
+    path = pukiwiki.normalize_path(path, path_prefix)
 
     page = Page(path)
 
@@ -134,7 +101,7 @@ def create_revision(
         raise RuntimeError("attempt to extract non-regular file")
 
     content = f.read()
-    original = content.decode(DEFAULT_ENCODING, errors="backslashreplace")
+    original = pukiwiki.decode(content)
     body = pukiwiki.convert(original)
 
     date = pukiwiki.get_date(original)
@@ -247,7 +214,7 @@ def main(parsed_args: ArgNamespace):
     user = create_user(password_seed, user_name)
     users = get_users_json_from_user(user)
 
-    tar = open_tar(dump_file)
+    tar = pukiwiki.open_tar(dump_file)
     pages, revisions = get_data_json(tar, prefix, user)
 
     write_zip(output_file, pages, revisions, users, meta)

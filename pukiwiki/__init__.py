@@ -1,6 +1,17 @@
+import os
 import re
+import tarfile
+import urllib.parse
 
 _pat_author = re.compile(r'^#author\("(.*)","(.*)","(.*)"\)\n?')
+two_chars = re.compile("..?")
+
+DEFAULT_ENCODING = "euc_jp"
+
+
+def open_tar(file):
+    tar = tarfile.TarFile(fileobj=file, encoding=DEFAULT_ENCODING)
+    return tar
 
 
 def get_date(src) -> str | None:
@@ -91,6 +102,33 @@ def convert(src):
         s = f(s)
 
     return s
+
+
+def decode(
+    content: bytes, encoding=DEFAULT_ENCODING, errors="backslashreplace"
+) -> str:
+    return content.decode(encoding, errors=errors)
+
+
+def to_url_encode(s: str) -> str:
+    matches = two_chars.findall(s)
+    matches.insert(0, "")
+    encoded = "%".join(matches)
+    return encoded
+
+
+def decode_path(path: str) -> str:
+    url_encoded = to_url_encode(path)
+    decoded = urllib.parse.unquote(url_encoded, encoding=DEFAULT_ENCODING)
+    return decoded
+
+
+def normalize_path(path: str, prefix: str) -> str:
+    path = os.path.basename(path)
+    path, _ = os.path.splitext(path)
+    path = decode_path(path)
+    path = os.path.join(prefix, path)
+    return path
 
 
 def _run_convert_test():
