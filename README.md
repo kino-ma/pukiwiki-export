@@ -42,6 +42,7 @@ Pukiwiki の Wiki データをダンプして HTML に出力、または Growi �
 動作環境
 
 - Python 3.10
+- Pandoc 3.1.11.1 & Pandoc (Python package) 2.4
 - または Nix Flakes
     - 開発用シェル (`$ nix develop`) 内でご使用ください
 
