@@ -11,12 +11,12 @@ import urllib.parse
 import zipfile
 from typing import Tuple
 
-from lib import pukiwiki
-from lib.date import now_iso
-from lib.page import Page
-from lib.password import random_seed
-from lib.revision import Revision
-from lib.user import User
+import pukiwiki
+from growi.date import now_iso
+from growi.page import Page
+from growi.password import random_seed
+from growi.revision import Revision
+from growi.user import User
 
 
 DEFAULT_ENCODING = "euc_jp"

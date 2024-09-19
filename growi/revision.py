@@ -1,5 +1,5 @@
-from .date import epoch_iso
-from .id import Id
+from growi.date import epoch_iso
+from growi.id import Id
 
 
 class Revision:

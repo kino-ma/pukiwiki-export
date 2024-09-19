@@ -1,6 +1,6 @@
-from id import Id
-from date import now_iso, epoch_iso
-from password import random_password, hash_password
+from growi.id import Id
+from growi.date import now_iso, epoch_iso
+from growi.password import random_password, hash_password
 
 
 class User:
