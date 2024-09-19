@@ -1,16 +1,13 @@
 import pandoc
 
 _PANDOC_FORMAT_MARKDOWN = "markdown"
+_PANDOC_FORMAT_HTML = "html"
 
 
 def to_html(markdown: str) -> str:
     doc = pandoc.read(markdown, format=_PANDOC_FORMAT_MARKDOWN)
-
-    print(type(doc))
-    print(doc)
-
-    return ""
+    return pandoc.write(doc, format=_PANDOC_FORMAT_HTML)
 
 
 if __name__ == "__main__":
-    to_html("# Hello World!")
+    print(to_html("# Hello World!"))
