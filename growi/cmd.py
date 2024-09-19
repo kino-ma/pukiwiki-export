@@ -71,12 +71,6 @@ def set_args(parser: ArgumentParser):
     parser.set_defaults
 
 
-def is_wiki_page(tarinfo: tarfile.TarInfo) -> bool:
-    return tarinfo.path.startswith("wiki/") or tarinfo.path.startswith(
-        "/wiki/"
-    )
-
-
 def create_page(tarinfo: tarfile.TarInfo, path_prefix: str):
     if not tarinfo.isfile():
         raise RuntimeError("Given TarInfo was not a file")
@@ -160,7 +154,7 @@ def get_data_json(
         if not member.isfile():
             continue
 
-        if not is_wiki_page(member):
+        if not pukiwiki.is_wiki_page(member):
             print("skipping", member.path)
             continue
 

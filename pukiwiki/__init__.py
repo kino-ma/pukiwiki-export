@@ -123,12 +123,21 @@ def decode_path(path: str) -> str:
     return decoded
 
 
-def normalize_path(path: str, prefix: str) -> str:
+def normalize_path(path: str, prefix: str = "") -> str:
     path = os.path.basename(path)
     path, _ = os.path.splitext(path)
     path = decode_path(path)
-    path = os.path.join(prefix, path)
+
+    if prefix != "":
+        path = os.path.join(prefix, path)
+
     return path
+
+
+def is_wiki_page(tarinfo: tarfile.TarInfo) -> bool:
+    return tarinfo.path.startswith("wiki/") or tarinfo.path.startswith(
+        "/wiki/"
+    )
 
 
 def _run_convert_test():
