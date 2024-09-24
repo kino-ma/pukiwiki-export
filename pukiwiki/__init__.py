@@ -88,9 +88,6 @@ def convert_headings(src):
 
 def sanitize_html(src):
     s = html.escape(src)
-    print("===")
-    print(s)
-    print("===")
     return s
 
 
@@ -145,9 +142,15 @@ def normalize_path(path: str, prefix: str = "") -> str:
 
 
 def is_wiki_page(tarinfo: tarfile.TarInfo) -> bool:
-    return tarinfo.path.startswith("wiki/") or tarinfo.path.startswith(
-        "/wiki/"
-    )
+    is_wiki_prefix = tarinfo.path.startswith(
+        "wiki/"
+    ) or tarinfo.path.startswith("/wiki/")
+
+    path = normalize_path(tarinfo.path)
+    name = os.path.split(path)[-1]
+    is_special_page = name.startswith(":")
+
+    return is_wiki_prefix and not is_special_page
 
 
 def _run_convert_test():
