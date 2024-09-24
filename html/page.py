@@ -1,4 +1,4 @@
-from pandoc import Pandoc
+from pandoc.types import Pandoc
 
 
 class Page:

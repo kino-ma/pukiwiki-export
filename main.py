@@ -3,6 +3,7 @@
 import argparse
 
 import growi.cmd
+import html.cmd
 
 
 def parse_args():
@@ -15,6 +16,9 @@ def parse_args():
 
     growi_subparser = subparsers.add_parser("growi")
     growi.cmd.set_args(growi_subparser)
+
+    html_subparser = subparsers.add_parser("html")
+    html.cmd.set_args(html_subparser)
 
     parser.add_argument(
         "pukiwiki_dump",
