@@ -1,3 +1,4 @@
+import html
 import os
 import re
 import tarfile
@@ -51,7 +52,7 @@ def convert_bullets(src):
 
 
 def convert_br(src):
-    s = _sub(r"&br", "<br>", src)
+    s = _sub(r"&br", "  ", src)
     return s
 
 
@@ -85,6 +86,14 @@ def convert_headings(src):
     return s4
 
 
+def sanitize_html(src):
+    s = html.escape(src)
+    print("===")
+    print(s)
+    print("===")
+    return s
+
+
 def convert(src):
     funcs = [
         delete_author,
@@ -95,6 +104,7 @@ def convert(src):
         convert_strike,
         convert_lsx,
         convert_headings,
+        sanitize_html,
     ]
 
     s = src
