@@ -6,3 +6,4 @@ pages*.json
 revisions*.json
 users*.json
 meta*.json
+data/*
