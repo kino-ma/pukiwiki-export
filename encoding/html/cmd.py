@@ -29,12 +29,19 @@ def read_tar(tar: tarfile.TarFile) -> Converter:
 
     n = len(tar.getmembers())
 
+    def print_progress(i: int, info: str):
+        prog = f"\33[2K\rReading file {i:5} / {n:6} ({info})"
+        sys.stdout.write(prog)
+        sys.stdout.flush()
+
     for i, member in enumerate(tar):
         i = i + 1
         if not member.isfile():
+            print_progress(i, "Skipped: not a file")
             continue
 
         if not pukiwiki.is_wiki_page(member):
+            print_progress(i, "Skipped: not a wiki page")
             continue
 
         path = pukiwiki.normalize_path(member.path)
@@ -45,9 +52,7 @@ def read_tar(tar: tarfile.TarFile) -> Converter:
 
         content = f.read()
 
-        prog = f"\rReading file {i:5} / {n:6} ({len(content)} bytes)"
-        sys.stdout.write(prog)
-        sys.stdout.flush()
+        print_progress(i, f"{len(content):6} bytes")
 
         original = pukiwiki.decode(content)
         body = pukiwiki.convert(original)
