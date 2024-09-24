@@ -10,6 +10,22 @@ _PANDOC_FORMAT_MARKDOWN = "markdown"
 _PANDOC_FORMAT_HTML = "html"
 
 
+def possible_paths(paths: list[str]) -> list[str]:
+    if len(paths) <= 1:
+        return paths
+
+    me = paths[0]
+    children = possible_paths(paths[1:])
+
+    out = [me]
+
+    for child in children:
+        path = os.path.join(me, child)
+        out.append(path)
+
+    return out
+
+
 class Converter:
     results: dict[str, Page]
 
@@ -21,9 +37,11 @@ class Converter:
 
         parents = self.find_parent_path(page.path)
         for p in parents:
-            page = self.results[p]
+            parent_page = self.results[p]
             del self.results[p]
-            self.results[page.path] = page
+
+            new_page = parent_page.to_index()
+            self.results[new_page] = new_page
 
         self.results[path] = page
 
@@ -31,7 +49,8 @@ class Converter:
 
     def find_parent_path(self, path: str) -> list[str]:
         parents = []
-        possible_parents = os.path.split(path)
+        paths = list(os.path.split(path))
+        possible_parents = possible_paths(paths)
 
         for p in possible_parents:
             if self.results.get(p) is not None:
