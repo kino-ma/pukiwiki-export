@@ -8,11 +8,11 @@ import zipfile
 from typing import Tuple
 
 import pukiwiki
-from growi.date import now_iso
-from growi.page import Page
-from growi.revision import Revision
-from growi.user import User
-from growi.password import random_seed
+from encoding.growi.date import now_iso
+from encoding.growi.page import Page
+from encoding.growi.revision import Revision
+from encoding.growi.user import User
+from encoding.growi.password import random_seed
 
 
 EUC_JP_SLASH = "2F"

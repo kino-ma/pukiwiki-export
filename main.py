@@ -2,8 +2,8 @@
 
 import argparse
 
-import growi.cmd
-import html.cmd
+from encoding.growi import cmd as growi_cmd
+from encoding.html import cmd as html_cmd
 
 
 def parse_args():
@@ -15,10 +15,10 @@ def parse_args():
     subparsers = parser.add_subparsers(required=True)
 
     growi_subparser = subparsers.add_parser("growi")
-    growi.cmd.set_args(growi_subparser)
+    growi_cmd.set_args(growi_subparser)
 
     html_subparser = subparsers.add_parser("html")
-    html.cmd.set_args(html_subparser)
+    html_cmd.set_args(html_subparser)
 
     parser.add_argument(
         "pukiwiki_dump",
@@ -27,7 +27,7 @@ def parse_args():
         help="pukiwiki dump file (tar.gz)",
     )
 
-    parser.set_defaults(func=growi.cmd.main)
+    parser.set_defaults(func=growi_cmd.main)
 
     parsed_args = parser.parse_args()
 

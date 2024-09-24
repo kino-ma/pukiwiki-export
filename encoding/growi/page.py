@@ -1,5 +1,5 @@
-from growi.date import epoch_iso
-from growi.id import Id
+from encoding.growi.date import epoch_iso
+from encoding.growi.id import Id
 
 
 class Page:

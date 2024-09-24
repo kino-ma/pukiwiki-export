@@ -3,7 +3,7 @@ import zipfile
 
 import pandoc
 
-from html.page import Page
+from encoding.html.page import Page
 
 _PANDOC_FORMAT_MARKDOWN = "markdown"
 _PANDOC_FORMAT_HTML = "html"

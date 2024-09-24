@@ -4,7 +4,7 @@ import sys
 import tarfile
 
 
-from html.markdown import Converter
+from encoding.html.markdown import Converter
 import pukiwiki
 
 
