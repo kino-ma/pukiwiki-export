@@ -2,5 +2,5 @@
 line-length = 79
 
 [[tool.mypy.overrides]]
-module = "pandoc"
+module = "pandoc.*"
 ignore_missing_imports = true
