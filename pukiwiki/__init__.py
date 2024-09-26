@@ -43,6 +43,45 @@ def delete_hash(src):
     return s
 
 
+def convert_link(src: str):
+    # Replace the alias notation
+    replaced = src.replace(">", ":")
+    out = replaced
+
+    # Start iteration from the tail of the string as the matching index will shift as we replace the substrings
+    for match in reversed(
+        list(re.finditer(r"(?<=\[\[)(.+)(?=\]\])", replaced))
+    ):
+        group = match.group()
+        parts = group.split(":", maxsplit=1)
+
+        # This is internal wiki link. Keep original text
+        if len(parts) <= 1:
+            continue
+
+        name, url = parts
+
+        parsed = urllib.parse.urlparse(url)
+
+        # This is InterWiki link. Keep original text
+        if parsed.netloc == "":
+            continue
+
+        # Then this is external web link!
+
+        # If the link has no name
+        if parsed.scheme == "":
+            name = url = group
+
+        md = f"[{name}]({url})"
+
+        # Include [[ and ]]
+        start, end = match.start() - 2, match.end() + 2
+        out = out[:start] + md + out[end:]
+
+    return out
+
+
 def convert_bullets(src):
     s1 = _sub(r"^---", "        -", src)
     s2 = _sub(r"^--", "    -", s1)
@@ -69,6 +108,18 @@ def convert_strike(src):
     return s
 
 
+def convert_strong(src):
+    s = _sub(r"''", "**", src)
+
+    return s
+
+
+def convert_emphasis(src):
+    s = _sub(r"'''", "*", src)
+
+    return s
+
+
 def convert_lsx(src):
     s = _sub(r"^\#lsx", r"$lsx()", src)
 
@@ -86,6 +137,44 @@ def convert_headings(src):
     return s4
 
 
+def convert_codeblock(src: str):
+    lines = src.split("\n")
+
+    start, end = None, None
+    starts = []
+    ends = []
+
+    for i, line in enumerate(lines):
+        # We find a code block
+        if line.startswith(" "):
+            # trim space
+            lines[i] = line[1:]
+
+            # If the first line of code block
+            if start is None:
+                start = i
+
+            # Continue reading code block
+            elif line.startswith(" ") and start is not None:
+                continue
+
+        # End reading code block
+        elif not line.startswith(" ") and start is not None:
+            starts.append(start)
+            ends.append(i)
+            start, end = None, None
+        else:
+            continue
+
+    # Iterate from end of the list.
+    # Because we are inserting new elements and alder indeices will be destroyed.
+    for start, end in list(zip(starts, ends))[::-1]:
+        lines.insert(end, "```")
+        lines.insert(start, "```")
+
+    return "\n".join(lines)
+
+
 def sanitize_html(src):
     s = html.escape(src)
     return s
@@ -95,12 +184,16 @@ def convert(src):
     funcs = [
         delete_author,
         delete_hash,
+        convert_link,
         convert_bullets,
         convert_br,
         convert_pre,
         convert_strike,
+        convert_strong,
+        convert_emphasis,
         convert_lsx,
         convert_headings,
+        convert_codeblock,
         sanitize_html,
     ]
 
