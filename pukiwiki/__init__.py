@@ -43,6 +43,11 @@ def delete_hash(src):
     return s
 
 
+def delete_toc(src):
+    s = _sub(r"^#contents", "", src)
+    return s
+
+
 def convert_link(src: str):
     # Replace the alias notation
     replaced = src.replace(">", ":")
@@ -184,6 +189,7 @@ def convert(src):
     funcs = [
         delete_author,
         delete_hash,
+        delete_toc,
         convert_link,
         convert_bullets,
         convert_br,
