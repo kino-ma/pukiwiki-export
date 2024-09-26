@@ -64,7 +64,9 @@ class Converter:
                 self.write_page(f, page)
 
     def write_page(self, zip: zipfile.ZipFile, page: Page):
-        content = pandoc.write(page.doc, format=_PANDOC_FORMAT_HTML)
+        content = pandoc.write(
+            page.doc, format=_PANDOC_FORMAT_HTML, options=["-s"]
+        )
         path = page.path
         zip.writestr(path, content)
 
